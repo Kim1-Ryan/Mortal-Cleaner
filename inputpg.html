@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose your Chores</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="video-container">
+        
+        <video autoplay muted loop playsinline id="bg-video">
+           
+            <source src="./Fire_Embers_23___22s___4k_res (1).mp4" type="video/mp4">
+            Your browser does not support HTML5 video.
+       
+        </video>
+        
+        <div class="content">
+            
+            <div id="title2"><img src="./mc title.png" alt="title text" style="width: 60%;"/></div>
+            
+            <div id="selection">
+                
+                <div id="chooseTitle"><img src="./chooseTitle.png"/></div>
+            
+                <div class="grid-container" id="choreGrid">
+                    
+                    <div class="chore-box" data-id="dusting" data-name="dusting" style="background-image: url('./icons8-dusting-64.png');"></div>
+                    <div class="chore-box" data-id="sweep" data-name="sweep" style="background-image: url('./icons8-broom-64.png');"></div>
+                    <div class="chore-box" data-id="mop" data-name="mop" style="background-image: url('./icons8-mop-64.png');"></div>
+                    <div class="chore-box" data-id="vacuum" data-name="vacuum" style="background-image: url('./icons8-vacuum-cleaner-64.png');"></div>
+                    <div class="chore-box" data-id="dishes" data-name="dishes" style="background-image: url('./icons8-washing-64.png');"></div>
+                    <div class="chore-box" data-id="wash-laundry" data-name="wash-laundry" style="background-image: url('./icons8-washing-machine-64.png');"></div>
+                    <div class="chore-box" data-id="pack-laundry" data-name="pack-laundry" style="background-image: url('./icons8-hanger-64.png');"></div>
+                    <div class="chore-box" data-id="ironing" data-name="ironing" style="background-image: url('./icons8-ironing-64.png');"></div>
+                    <div class="chore-box" data-id="bathroom" data-name="bathroom" style="background-image: url('./icons8-toilet-64.png');"></div>
+                    <div class="chore-box" data-id="bedroom" data-name="bedroom" style="background-image: url('./icons8-bed-85.png');"></div>
+                    <div class="chore-box" data-id="trash" data-name="trash" style="background-image: url('./icons8-trash-64.png');"></div>
+                    <div class="chore-box" data-id="cook" data-name="cook" style="background-image: url('./icons8-cooking-64.png');"></div>
+                    <div class="chore-box" data-id="pets" data-name="pets" style="background-image: url('./icons8-pet-food-64.png');"></div>
+                    <div class="chore-box" data-id="pot-plants" data-name="pot-plants" style="background-image: url('./icons8-watering-plants-64.png');"></div>
+                    <div class="chore-box" data-id="garden" data-name="garden" style="background-image: url('./icons8-rake-64.png');"></div>
+                    <div class="chore-box" data-id="devices" data-name="devices" style="background-image: url('./icons8-clean-64.png');"></div>
+                    <div class="chore-box" data-id="groceries" data-name="groceries" style="background-image: url('./icons8-grocery-64.png');"></div>
+                    <div class="chore-box" data-id="garage" data-name="garage" style="background-image: url('./icons8-garage-64.png');"></div>
+                                    
+                </div>
+                
+                <button id="confirmBtn" style="background: transparent; border: 2px solid red; padding-top: 3px;"><img src="./confirm selection.png" alt="confirm"/></button>
+                
+                <p id="output"></p>
+            
+            </div>
+        
+        </div>
+    
+    </div>
+    
+    <script>
+
+     const grid = document.getElementById('choreGrid');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const output = document.getElementById('output');
+        let selectedChores = [];
+
+        grid.addEventListener('click', (e) => {
+            const choreBox = e.target.closest('.chore-box');
+            if (!choreBox) return;
+
+            const charId = choreBox.getAttribute('data-id');
+            const choreName = choreBox.getAttribute('data-name'); // Grabs pre-assigned name
+            const isSelected = choreBox.classList.toggle('selected');
+
+            if (isSelected) {
+                // Only prompt for minutes
+                const mins = parseFloat(prompt(`Minutes for "${choreName}":`, "5")) || "5";
+                selectedChores.push({ id: charId, task: choreName, time: parseFloat(mins) });
+            } else {
+                selectedChores = selectedChores.filter(item => item.id !== charId);
+            }
+        });
+
+        confirmBtn.addEventListener('click', () => {
+            if (selectedChores.length === 0) {
+                output.innerText = "NO CHORES SELECTED!";
+            } else {
+                localStorage.setItem('choreData', JSON.stringify(selectedChores));
+                window.location.href = 'play.html';
+            }
+        });
+
+    </script>
+</body>
+</html>

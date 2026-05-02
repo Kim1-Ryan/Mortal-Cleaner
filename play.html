@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's Work!</title>
+    <style>
+        body { background: black; color: #ffcc00; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        #overall-progress-container { position: absolute; top: 0; width: 100%; height: 12px; background: #222; border-bottom: 2px solid #444; z-index: 10; }
+        #overall-bar { width: 0%; height: 100%; background: linear-gradient(to right, #006600, #00ff00); transition: width 0.4s; }
+        
+        #displayArea { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; text-align: center; padding: 20px; position: relative; }
+        .chore-name { font-size: 5rem; animation: mkPulse 1.5s infinite ease-in-out; text-shadow: 0 0 30px #ff0000; text-transform: uppercase; z-index: 10; }
+        #digital-clock { font-size: 2rem; color: #fff; margin-top: 20px; z-index: 10; }
+
+        /* Button Positioning */
+        #pauseBtn { position: absolute; bottom: 60px; left: calc(50% - 110px); transform: translateX(-50%); padding: 15px 30px; background: #800000; color: white; border: 3px solid #ffcc00; font-weight: bold; cursor: pointer; font-size: 1.1rem; z-index: 20; min-width: 160px;}
+        #completeBtn { position: absolute; bottom: 60px; left: calc(50% + 110px); transform: translateX(-50%); padding: 15px 30px; background: #ffcc00; color: black; border: 3px solid #800000; font-weight: bold; cursor: pointer; font-size: 1.1rem; z-index: 20; min-width: 160px;}
+        
+        /* Blood Splatter */
+        #blood-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: url('./blood splatter.png') no-repeat center; background-size: cover; opacity: 0; pointer-events: none; z-index: 100;}
+        .splat-animation { animation: splat 1s ease-out forwards;}
+        @keyframes splat { 0% { opacity: 0; transform: scale(0.5); } 20% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.1); }}
+
+        .camera-shake { animation: shake-impact 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake-impact { 10%, 90% { transform: translate3d(-2px, -2px, 0); } 20%, 80% { transform: translate3d(4px, 4px, 0); } 30%, 50%, 70% { transform: translate3d(-6px, -6px, 0); } 40%, 60% { transform: translate3d(6px, 6px, 0); }}
+
+        .victory-flash { animation: flash-white 1s ease-out; }
+        @keyframes flash-white { 0% { background-color: #fff; } 100% { background-color: #000; } }
+        @keyframes bounceHover { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        @keyframes mkPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        
+        .trophy-icon { width: 150px; height: auto; margin: 10px 0; animation: bounceHover 3s ease-in-out infinite; filter: drop-shadow(0 0 15px #ffcc00); z-index: 10; }
+        #newGameBtn { margin-top: 30px; padding: 15px 40px; background: #ff0000; color: white; border: 3px solid #ffcc00; font-weight: bold; font-size: 1.5rem; cursor: pointer; z-index: 10; }
+        #timer-progress-container { position: absolute; bottom: 0; width: 100%; height: 30px; background: #111; z-index: 10; }
+        #timer-bar { width: 100%; height: 100%; background: #ffcc00; box-shadow: 0 0 20px #ffcc00; }
+        #fireworksCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+    </style>
+</head>
+<body>
+    
+    <audio id="startSound" src="./gong-sound-mortal-kombat-x.mp3" preload="auto"></audio>
+    <audio id="fatalitySound" src="./fatality.mp3" preload="auto"></audio>
+    <audio id="victorySound" src="./Flawless_Victory_Sound_Effect.mp3" preload="auto"></audio>
+    
+    <div id="overall-progress-container"><div id="overall-bar"></div></div>
+    <div id="displayArea">
+        <div id="chore-text" class="chore-name"></div>
+        <div id="digital-clock">00:00</div>
+    </div>
+
+    <button id="pauseBtn">PAUSE</button>
+    <button id="completeBtn">COMPLETE</button>
+    <div id="blood-overlay"></div>
+    <div id="timer-progress-container"><div id="timer-bar"></div></div>
+
+    <script>
+        
+        const choreText = document.getElementById('chore-text');
+        const digitalClock = document.getElementById('digital-clock');
+        const timerBar = document.getElementById('timer-bar');
+        const overallBar = document.getElementById('overall-bar');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const completeBtn = document.getElementById('completeBtn');
+        const fatalitySound = document.getElementById('fatalitySound');
+        const bloodOverlay = document.getElementById('blood-overlay');
+        const startSound = document.getElementById('startSound');
+        const victorySound = document.getElementById('victorySound');
+        const displayArea = document.getElementById('displayArea');
+
+        const choreData = JSON.parse(localStorage.getItem('choreData'));
+        let currentIndex = 0;
+        let isPaused = false;
+        let countdown;
+
+        pauseBtn.addEventListener('click', () => {
+            isPaused = !isPaused;
+            pauseBtn.innerText = isPaused ? "RESUME" : "PAUSE";
+            pauseBtn.style.background = isPaused ? "#006600" : "#800000";
+        });
+
+        completeBtn.onclick = () => {
+            if (navigator.vibrate) navigator.vibrate(200);
+            fatalitySound.currentTime = 0;
+            fatalitySound.play().catch(() => {});
+
+            bloodOverlay.classList.remove('splat-animation');
+            displayArea.classList.remove('camera-shake');
+            void bloodOverlay.offsetWidth; 
+            bloodOverlay.classList.add('splat-animation');
+            displayArea.classList.add('camera-shake');
+
+            if (countdown) clearInterval(countdown);
+            setTimeout(() => {
+                currentIndex++;
+                startSequence();
+            }, 800);
+        };
+
+        function formatTime(ms) {
+            const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+            return `${Math.floor(totalSeconds / 60).toString().padStart(2, '0')}:${(totalSeconds % 60).toString().padStart(2, '0')}`;
+        }
+
+        function startSequence() {
+            if (countdown) clearInterval(countdown);
+
+            if (!choreData || currentIndex >= choreData.length) {
+                isPaused = true;
+                victorySound.currentTime = 0;
+                victorySound.play().catch(() => {});
+
+                document.body.classList.add('victory-flash');
+                
+                displayArea.innerHTML = `
+                    <canvas id="fireworksCanvas"></canvas>
+                    <h1 class="pulse" style="font-size: 7rem; color: #ff0000; margin: 0; position: relative; z-index: 10;">VICTORY</h1>
+                    <img src="./trophy.png" class="trophy-icon" alt="Trophy">
+                    <button id="newGameBtn">NEW GAME</button>
+                `;
+
+                initFireworks();
+                document.getElementById('newGameBtn').onclick = () => window.location.href = 'index.html';
+
+                // HIDE GAME BUTTONS
+                pauseBtn.style.display = "none";
+                completeBtn.style.display = "none";
+                digitalClock.style.display = "none";
+                timerBar.style.width = "0%";
+                overallBar.style.width = "100%";
+                return;
+            }
+
+            startSound.currentTime = 0;
+            startSound.play().catch(() => {});
+
+            const currentItem = choreData[currentIndex];
+            choreText.innerText = currentItem.task;
+            overallBar.style.width = `${(currentIndex / choreData.length) * 100}%`;
+
+            let timeLeft = currentItem.time * 60 * 1000;
+            const totalTime = currentItem.time * 60 * 1000;
+
+            countdown = setInterval(() => {
+                if (!isPaused) {
+                    timeLeft -= 100;
+                    timerBar.style.width = `${(timeLeft / totalTime) * 100}%`;
+                    digitalClock.innerText = formatTime(timeLeft);
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        currentIndex++;
+                        startSequence();
+                    }
+                }
+            }, 100);
+        }
+
+        function initFireworks() {
+            const canvas = document.getElementById('fireworksCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            let particles = [];
+            function createP() {
+                const colors = ['#ff0000', '#ffcc00', '#ff6600', '#ffffff'];
+                return { x: Math.random()*canvas.width, y: canvas.height+10, vx: Math.random()*4-2, vy: Math.random()*-12-5, color: colors[Math.floor(Math.random()*4)], size: Math.random()*3+1 };
+            }
+            function loop() {
+                ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+                if (particles.length < 60) particles.push(createP());
+                particles.forEach((p, i) => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.15;
+                    ctx.shadowBlur = 15; ctx.shadowColor = p.color; ctx.fillStyle = p.color;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+                    ctx.shadowBlur = 0;
+                    if (p.y > canvas.height) particles.splice(i, 1);
+                });
+                requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        if (choreData && choreData.length > 0) startSequence();
+    
+    </script>
+
+</body>
+</html>
