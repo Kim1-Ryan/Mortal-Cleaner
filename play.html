@@ -20,7 +20,21 @@
         .splat-animation { animation: splat 0.8s ease-out forwards; }
         @keyframes splat { 0% { opacity: 0; transform: scale(0.5); } 20% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.1); } }
         #fireworksCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
-        .trophy-icon { width: 150px; height: auto; margin: 20px 0; filter: drop-shadow(0 0 15px #ffcc00); z-index: 10; }
+        
+        /* TROPHY BOUNCE ANIMATION */
+        .trophy-icon { 
+            width: 150px; 
+            height: auto; 
+            margin: 20px 0; 
+            filter: drop-shadow(0 0 15px #ffcc00); 
+            z-index: 10; 
+            animation: trophyFloat 3s ease-in-out infinite; 
+        }
+        @keyframes trophyFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
         footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8); color: #ffcc00; padding: 10px 0; text-align: center; z-index: 200; border-top: 1px solid #444; }
         @media (max-width: 600px) { .chore-name { font-size: 2.2rem; } #digital-clock { font-size: 1.8rem; } #pauseBtn { left: 25%; } #completeBtn { left: 75%; } .trophy-icon { width: 100px; } }
         @keyframes mkPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
@@ -40,11 +54,12 @@
     <script>
         const choreData = JSON.parse(localStorage.getItem('choreData'));
         const startSound = document.getElementById('startSound');
+        const fatalitySound = document.getElementById('fatalitySound');
+        const victorySound = document.getElementById('victorySound');
         const overallBar = document.getElementById('overall-bar');
         const displayArea = document.getElementById('displayArea');
         let currentIndex = 0, isPaused = false, countdown, timeLeft;
 
-        // Fix 1: Audio Unlock & Initial Start
         const unlockAndStart = () => {
             startSound.play().then(() => { startSound.pause(); startSound.currentTime = 0; startSequence(); })
             .catch(e => console.error("Audio blocked"));
@@ -64,28 +79,49 @@
         };
 
         document.getElementById('completeBtn').onclick = () => {
-            if (navigator.vibrate) navigator.vibrate(200);
-            document.getElementById('fatalitySound').play().catch(()=>{});
-            const blood = document.getElementById('blood-overlay');
-            blood.classList.remove('splat-animation'); void blood.offsetWidth; blood.classList.add('splat-animation');
-            clearInterval(countdown); currentIndex++; startSequence();
+            handleTransition();
         };
+
+        function handleTransition() {
+            // Stop current timer
+            if (countdown) clearInterval(countdown);
+            
+            // Physical and Audio impact
+            if (navigator.vibrate) navigator.vibrate(200);
+            fatalitySound.currentTime = 0;
+            fatalitySound.play().catch(()=>{});
+
+            // Visual impact
+            const blood = document.getElementById('blood-overlay');
+            blood.classList.remove('splat-animation'); 
+            void blood.offsetWidth; 
+            blood.classList.add('splat-animation');
+
+            // Brief gap before next round (1.2 seconds)
+            currentIndex++;
+            setTimeout(startSequence, 1200);
+        }
 
         function startSequence() {
             if (countdown) clearInterval(countdown);
-            // Fix 2: Progress Bar 100% and Victory Layout
+
             if (!choreData || currentIndex >= choreData.length) {
                 overallBar.style.width = "100%";
-                document.getElementById('victorySound').play().catch(()=>{});
+                victorySound.currentTime = 0;
+                victorySound.play().catch(()=>{});
                 displayArea.innerHTML = `<canvas id="fireworksCanvas"></canvas><h1 style="font-size:4rem;color:#ff0000;z-index:10;margin:0;">VICTORY</h1><img src="./trophy.png" class="trophy-icon"><button id="newGame" style="z-index:20;padding:15px 30px;background:#ff0000;color:white;border:2px solid yellow;cursor:pointer;font-family:'Courier New';">NEW GAME</button>`;
                 document.getElementById('newGame').onclick = () => window.location.href='index.html';
                 document.getElementById('pauseBtn').style.display = "none";
                 document.getElementById('completeBtn').style.display = "none";
                 document.getElementById('timer-progress-container').style.display = "none";
-                initFireworks(); return;
+                initFireworks(); 
+                return;
             }
 
-            startSound.currentTime = 0; startSound.play().catch(()=>{});
+            // Play Gong
+            startSound.currentTime = 0; 
+            startSound.play().catch(()=>{});
+
             const current = choreData[currentIndex];
             document.getElementById('chore-text').innerText = current.task;
             overallBar.style.width = `${(currentIndex / choreData.length) * 100}%`;
@@ -97,7 +133,10 @@
                     document.getElementById('timer-bar').style.width = `${(timeLeft / total) * 100}%`;
                     const s = Math.max(0, Math.ceil(timeLeft/1000));
                     document.getElementById('digital-clock').innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
-                    if (timeLeft <= 0) { clearInterval(countdown); currentIndex++; startSequence(); }
+                    
+                    if (timeLeft <= 0) { 
+                        handleTransition(); 
+                    }
                 }
             }, 100);
         }
