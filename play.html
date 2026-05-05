@@ -8,9 +8,7 @@
         body { background: black; color: #ffcc00; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; height: 100vh; }
         #overall-progress-container { position: fixed; top: 0; width: 100%; height: 15px; background: #222; z-index: 50; border-bottom: 2px solid #444;}
         #overall-bar { width: 0%; height: 100%; background: linear-gradient(to right, #006600, #00ff00); transition: width 0.4s; }
-        
         #displayArea { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; text-align: center; padding: 20px; position: relative; }
-        
         .chore-name { font-size: 5rem; text-shadow: 0 0 30px #ff0000; text-transform: uppercase; animation: mkPulse 1.5s infinite; z-index: 10; }
         #digital-clock { font-size: 3rem; color: #fff; margin: 20px 0; z-index: 10;}
         
@@ -36,10 +34,10 @@
 
         #blood-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: url('./blood splatter.png') no-repeat center; background-size: cover; opacity: 0; pointer-events: none; z-index: 100; }
         .splat-animation { animation: splat 1.2s ease-out forwards; }
+        #fireworksCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
         
         @keyframes splat { 0% { opacity: 0; transform: scale(0.5); } 20% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.1); } }
         @keyframes mkPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-
         footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8); color: #ffcc00; padding: 10px 0; text-align: center; z-index: 200; border-top: 1px solid #444; }
 
         @media (max-width: 600px) {
@@ -57,7 +55,6 @@
     
     <div id="overall-progress-container"><div id="overall-bar"></div></div>
     <div id="blood-overlay"></div>
-    
     <div id="displayArea">
         <div id="chore-text" class="chore-name">TAP SCREEN</div>
         <div id="digital-clock">READY?</div>
@@ -81,7 +78,6 @@
 
         let currentIndex = 0, isPaused = false, countdown, timeLeft;
 
-        // Step 1: Force Audio Unlock
         const setup = () => {
             startSound.play().then(() => { startSound.pause(); startSequence(); });
             document.getElementById('pauseBtn').style.display = "block";
@@ -100,37 +96,25 @@
 
         function finishCurrentRound() {
             if (countdown) clearInterval(countdown);
-            
-            // Play Fatality immediately
             fatalitySound.currentTime = 0;
             fatalitySound.play().catch(()=>{});
-
-            // Blood Splatter
             const blood = document.getElementById('blood-overlay');
             blood.classList.remove('splat-animation');
             void blood.offsetWidth;
             blood.classList.add('splat-animation');
-
             currentIndex++;
-
-            // THE GAP: Wait 2.5 seconds for Fatality sound to breathe before next gong/victory
-            setTimeout(() => {
-                startSequence();
-            }, 2500);
+            setTimeout(startSequence, 2500);
         }
 
         function startSequence() {
             if (countdown) clearInterval(countdown);
-
             if (!choreData || currentIndex >= choreData.length) {
-                // VICTORY SEQUENCE
                 overallBar.style.width = "100%";
-                
-                // Play Victory sound after 500ms delay
                 setTimeout(() => { victorySound.play().catch(()=>{}); }, 500);
-
-                // Build victory screen with the bounce class
+                
+                // RESTORED CANVAS HERE
                 displayArea.innerHTML = `
+                    <canvas id="fireworksCanvas"></canvas>
                     <h1 style="font-size:4rem; color:red; margin:0; z-index:10;">VICTORY</h1>
                     <img src="./trophy.png" class="trophy-image" alt="Trophy">
                     <button id="resetGame" style="z-index:30; padding:15px 40px; background:red; color:white; border:3px solid yellow; cursor:pointer; font-weight:bold;">NEW GAME</button>
@@ -140,20 +124,17 @@
                 document.getElementById('pauseBtn').style.display = "none";
                 document.getElementById('completeBtn').style.display = "none";
                 document.querySelector('#timer-progress-container').style.display = "none";
+                initFireworks(); 
                 return;
             }
 
-            // Play Gong Sound
             startSound.currentTime = 0;
             startSound.play().catch(()=>{});
-
             const current = choreData[currentIndex];
             document.getElementById('chore-text').innerText = current.task;
             overallBar.style.width = `${(currentIndex / choreData.length) * 100}%`;
-            
             let total = current.time * 60 * 1000;
             timeLeft = total;
-
             countdown = setInterval(() => {
                 if (!isPaused) {
                     timeLeft -= 100;
@@ -161,10 +142,36 @@
                     const s = Math.max(0, Math.ceil(timeLeft/1000));
                     document.getElementById('digital-clock').innerText = 
                         `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
-                    
                     if (timeLeft <= 0) finishCurrentRound();
                 }
             }, 100);
+        }
+
+        function initFireworks() {
+            const canvas = document.getElementById('fireworksCanvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight;
+            let particles = [];
+            const loop = () => {
+                ctx.fillStyle = 'rgba(0,0,0,0.1)'; 
+                ctx.fillRect(0,0,canvas.width,canvas.height);
+                if (particles.length < 50) particles.push({ 
+                    x: Math.random()*canvas.width, 
+                    y: canvas.height, 
+                    vx: Math.random()*4-2, 
+                    vy: Math.random()*-10-5, 
+                    color: '#ffcc00' 
+                });
+                particles.forEach((p, i) => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.15;
+                    ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
+                    if (p.y > canvas.height) particles.splice(i, 1);
+                });
+                requestAnimationFrame(loop);
+            }; 
+            loop();
         }
     </script>
 </body>
