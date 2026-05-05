@@ -11,44 +11,57 @@
         #displayArea { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; text-align: center; padding: 20px; position: relative; }
         .chore-name { font-size: 5rem; text-shadow: 0 0 30px #ff0000; text-transform: uppercase; animation: mkPulse 1.5s infinite; z-index: 10; }
         #digital-clock { font-size: 3rem; color: #fff; margin-top: 20px; z-index: 10;}
-        #pauseBtn, #completeBtn { position: absolute; bottom: 80px; padding: 15px 25px; font-weight: bold; cursor: pointer; z-index: 60; min-width: 140px; }
+        
+        #pauseBtn, #completeBtn { position: absolute; bottom: 80px; padding: 15px 25px; font-weight: bold; cursor: pointer; z-index: 60; min-width: 140px; border-radius: 5px; }
         #pauseBtn { left: calc(50% - 110px); transform: translateX(-50%); background: #800000; color: white; border: 3px solid #ffcc00; }
         #completeBtn { left: calc(50% + 110px); transform: translateX(-50%); background: #ffcc00; color: black; border: 3px solid #800000; }
+        
         #timer-progress-container { position: absolute; bottom: 0; width: 100%; height: 20px; background: #111; z-index: 10; }
         #timer-bar { width: 100%; height: 100%; background: #ffcc00; box-shadow: 0 0 15px #ffcc00; }
-        #blood-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: url('./blood splatter.png') no-repeat center; background-size: cover; opacity: 0; pointer-events: none; z-index: 100; }
-        .splat-animation { animation: splat 0.8s ease-out forwards; }
-        @keyframes splat { 0% { opacity: 0; transform: scale(0.5); } 20% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.1); } }
-        #fireworksCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
         
-        /* TROPHY BOUNCE ANIMATION */
-        .trophy-icon { 
+        /* THE TROPHY BOUNCE */
+        .trophy-bounce { 
             width: 150px; 
             height: auto; 
             margin: 20px 0; 
             filter: drop-shadow(0 0 15px #ffcc00); 
-            z-index: 10; 
-            animation: trophyFloat 3s ease-in-out infinite; 
-        }
-        @keyframes trophyFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            z-index: 20;
+            animation: floatAnim 2s ease-in-out infinite; 
         }
 
-        footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8); color: #ffcc00; padding: 10px 0; text-align: center; z-index: 200; border-top: 1px solid #444; }
-        @media (max-width: 600px) { .chore-name { font-size: 2.2rem; } #digital-clock { font-size: 1.8rem; } #pauseBtn { left: 25%; } #completeBtn { left: 75%; } .trophy-icon { width: 100px; } }
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+
+        #blood-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: url('./blood splatter.png') no-repeat center; background-size: cover; opacity: 0; pointer-events: none; z-index: 100; }
+        .splat-animation { animation: splat 0.8s ease-out forwards; }
+        
+        @keyframes splat { 0% { opacity: 0; transform: scale(0.5); } 20% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.1); } }
         @keyframes mkPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+        footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8); color: #ffcc00; padding: 10px 0; text-align: center; z-index: 200; border-top: 1px solid #444; }
+        
+        @media (max-width: 600px) { 
+            .chore-name { font-size: 2.2rem; } 
+            #pauseBtn { left: 25%; } #completeBtn { left: 75%; }
+            .trophy-bounce { width: 100px; }
+        }
     </style>
 </head>
 <body>
     <audio id="startSound" src="./gong-sound-mortal-kombat-x.mp3"></audio>
     <audio id="fatalitySound" src="./fatality.mp3"></audio>
     <audio id="victorySound" src="./Flawless_Victory_Sound_Effect.mp3"></audio>
+    
     <div id="overall-progress-container"><div id="overall-bar"></div></div>
     <div id="blood-overlay"></div>
     <div id="displayArea"><div id="chore-text" class="chore-name">TAP TO START</div><div id="digital-clock">READY?</div></div>
-    <button id="pauseBtn" style="display:none">PAUSE</button><button id="completeBtn" style="display:none">COMPLETE</button>
+    
+    <button id="pauseBtn" style="display:none">PAUSE</button>
+    <button id="completeBtn" style="display:none">COMPLETE</button>
     <div id="timer-progress-container" style="display:none"><div id="timer-bar"></div></div>
+    
     <footer>Kim Ryan</footer>
 
     <script>
@@ -58,48 +71,46 @@
         const victorySound = document.getElementById('victorySound');
         const overallBar = document.getElementById('overall-bar');
         const displayArea = document.getElementById('displayArea');
+        
         let currentIndex = 0, isPaused = false, countdown, timeLeft;
 
-        const unlockAndStart = () => {
-            startSound.play().then(() => { startSound.pause(); startSound.currentTime = 0; startSequence(); })
-            .catch(e => console.error("Audio blocked"));
-            document.removeEventListener('click', unlockAndStart);
-            document.removeEventListener('touchstart', unlockAndStart);
+        // Audio Unlock
+        const unlock = () => {
+            startSound.play().then(() => { startSound.pause(); startSequence(); });
+            document.removeEventListener('click', unlock);
             document.getElementById('pauseBtn').style.display = "block";
             document.getElementById('completeBtn').style.display = "block";
             document.getElementById('timer-progress-container').style.display = "block";
         };
-        document.addEventListener('click', unlockAndStart);
-        document.addEventListener('touchstart', unlockAndStart);
+        document.addEventListener('click', unlock);
 
         document.getElementById('pauseBtn').onclick = () => { 
             isPaused = !isPaused; 
             document.getElementById('pauseBtn').innerText = isPaused ? "RESUME" : "PAUSE"; 
-            document.getElementById('pauseBtn').style.background = isPaused ? "#006600" : "#800000";
         };
 
-        document.getElementById('completeBtn').onclick = () => {
-            handleTransition();
-        };
+        // When chore is finished
+        document.getElementById('completeBtn').onclick = () => finishChore();
 
-        function handleTransition() {
-            // Stop current timer
+        function finishChore() {
             if (countdown) clearInterval(countdown);
             
-            // Physical and Audio impact
-            if (navigator.vibrate) navigator.vibrate(200);
+            // 1. Play Fatality immediately
             fatalitySound.currentTime = 0;
             fatalitySound.play().catch(()=>{});
-
-            // Visual impact
+            
+            // 2. Visual Splat
             const blood = document.getElementById('blood-overlay');
             blood.classList.remove('splat-animation'); 
             void blood.offsetWidth; 
             blood.classList.add('splat-animation');
 
-            // Brief gap before next round (1.2 seconds)
             currentIndex++;
-            setTimeout(startSequence, 1200);
+
+            // 3. THE GAP: Wait 2 seconds for Fatality to finish before next sound
+            setTimeout(() => {
+                startSequence();
+            }, 2000);
         }
 
         function startSequence() {
@@ -107,14 +118,21 @@
 
             if (!choreData || currentIndex >= choreData.length) {
                 overallBar.style.width = "100%";
-                victorySound.currentTime = 0;
-                victorySound.play().catch(()=>{});
-                displayArea.innerHTML = `<canvas id="fireworksCanvas"></canvas><h1 style="font-size:4rem;color:#ff0000;z-index:10;margin:0;">VICTORY</h1><img src="./trophy.png" class="trophy-icon"><button id="newGame" style="z-index:20;padding:15px 30px;background:#ff0000;color:white;border:2px solid yellow;cursor:pointer;font-family:'Courier New';">NEW GAME</button>`;
-                document.getElementById('newGame').onclick = () => window.location.href='index.html';
+                
+                // 4. Victory Sound after a small final gap
+                setTimeout(() => {
+                    victorySound.play().catch(()=>{});
+                }, 500);
+
+                displayArea.innerHTML = `
+                    <h1 style="font-size:4rem;color:#ff0000;margin:0;z-index:10;">VICTORY</h1>
+                    <img src="./trophy.png" class="trophy-bounce">
+                    <button id="restart" style="z-index:30;padding:15px 30px;background:red;color:white;border:2px solid yellow;cursor:pointer;font-weight:bold;">NEW GAME</button>
+                `;
+                document.getElementById('restart').onclick = () => window.location.href='index.html';
                 document.getElementById('pauseBtn').style.display = "none";
                 document.getElementById('completeBtn').style.display = "none";
                 document.getElementById('timer-progress-container').style.display = "none";
-                initFireworks(); 
                 return;
             }
 
@@ -125,36 +143,17 @@
             const current = choreData[currentIndex];
             document.getElementById('chore-text').innerText = current.task;
             overallBar.style.width = `${(currentIndex / choreData.length) * 100}%`;
+            
             let total = current.time * 60 * 1000; timeLeft = total;
-
             countdown = setInterval(() => {
                 if (!isPaused) {
                     timeLeft -= 100;
                     document.getElementById('timer-bar').style.width = `${(timeLeft / total) * 100}%`;
                     const s = Math.max(0, Math.ceil(timeLeft/1000));
                     document.getElementById('digital-clock').innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
-                    
-                    if (timeLeft <= 0) { 
-                        handleTransition(); 
-                    }
+                    if (timeLeft <= 0) finishChore();
                 }
             }, 100);
-        }
-
-        function initFireworks() {
-            const canvas = document.getElementById('fireworksCanvas'); if(!canvas) return;
-            const ctx = canvas.getContext('2d'); canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            let particles = [];
-            const loop = () => {
-                ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-                if (particles.length < 50) particles.push({ x: Math.random()*canvas.width, y: canvas.height, vx: Math.random()*4-2, vy: Math.random()*-10-5, color: '#ffcc00' });
-                particles.forEach((p, i) => {
-                    p.x += p.vx; p.y += p.vy; p.vy += 0.15;
-                    ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
-                    if (p.y > canvas.height) particles.splice(i, 1);
-                });
-                requestAnimationFrame(loop);
-            }; loop();
         }
     </script>
 </body>
