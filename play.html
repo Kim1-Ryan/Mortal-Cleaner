@@ -59,7 +59,6 @@
 
         let currentIndex = 0, isPaused = false, countdown, timeLeft;
 
-        // Force Sound/Game Unlock
         const setup = () => {
             startSound.play().then(() => { startSound.pause(); startSequence(); });
             pauseBtn.style.display = "block";
@@ -69,19 +68,17 @@
         };
         document.addEventListener('click', setup);
 
-        // --- PAUSE LOGIC ---
         pauseBtn.onclick = () => {
             isPaused = !isPaused;
             if (isPaused) {
                 pauseBtn.innerText = "RESUME";
-                pauseBtn.style.backgroundColor = "#006600"; // Green for resume
+                pauseBtn.style.backgroundColor = "#006600";
             } else {
                 pauseBtn.innerText = "PAUSE";
-                pauseBtn.style.backgroundColor = "#800000"; // Red for pause
+                pauseBtn.style.backgroundColor = "#800000";
             }
         };
 
-        // --- COMPLETE LOGIC ---
         completeBtn.onclick = () => finishRound();
 
         function finishRound() {
@@ -132,27 +129,39 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             let particles = [];
-            // STRICT THEME COLORS
             const themeColors = ['#FF0000', '#FFFFFF', '#FFA500', '#FFFF00'];
 
             function loop() {
+                // THE SECRET TO TRAILS:
+                // Don't clear the screen entirely. Draw a semi-transparent black overlay.
+                // This makes older frames fade out slowly.
                 ctx.globalCompositeOperation = 'source-over';
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'; // Adjust 0.15 for longer/shorter tails
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+
                 if (particles.length < 50) {
                     particles.push({
                         x: Math.random() * canvas.width,
                         y: canvas.height,
-                        vx: (Math.random() - 0.5) * 6,
-                        vy: Math.random() * -12 - 6,
+                        vx: (Math.random() - 0.5) * 4,
+                        vy: Math.random() * -12 - 5,
                         color: themeColors[Math.floor(Math.random() * themeColors.length)],
-                        size: Math.random() * 3 + 2
+                        size: Math.random() * 2 + 1
                     });
                 }
+
+                // Add "Glow" effect
                 ctx.globalCompositeOperation = 'lighter';
                 particles.forEach((p, i) => {
-                    p.x += p.vx; p.y += p.vy; p.vy += 0.15;
-                    ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.15; // Gravity
+                    
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+
                     if (p.y > canvas.height) particles.splice(i, 1);
                 });
                 requestAnimationFrame(loop);
