@@ -4,7 +4,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose your Chores</title>
-    <link href="style.css" rel="stylesheet">
+    <style>
+        body {
+    background: url(./Fire_Embers_23___22s___4k_res\ \(1\).mp4);
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-self: center;
+    text-align: center;
+}
+
+
+#bg-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1;
+    object-fit: cover;
+}
+
+.content {
+  z-index: 1; /* Ensure text is above video */;
+}
+
+#title {
+    margin-top: 10%;
+    justify-self: center;
+}
+
+#title2 {
+    margin-top: 7%;
+    justify-self: center;
+}
+
+#startE {
+    margin-top: 25%;
+}
+
+#selection {
+    margin-top: 6%;
+}
+
+.grid-container { 
+    display: grid; 
+    grid-template-columns: repeat(9, 120px); 
+    gap: 15px; 
+    padding: 20px; 
+    background-color: #000; 
+    border: 4px solid #444;
+    justify-content: center; 
+}
+
+.chore-box { 
+    width: 120px; 
+    height: 160px; 
+    background-color: #333; 
+    border: 3px solid #666; 
+    cursor: pointer; 
+    transition: all 0.2s; 
+    position: relative; 
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.chore-box:hover { 
+    border-color: #fff; 
+    transform: scale(1.05); 
+    box-shadow: 0 0 15px #fff; 
+}
+
+.chore-box.selected { 
+    border-color: #ffcc00; 
+    box-shadow: 0 0 20px #ffcc00; 
+    background-color: #444; 
+}
+
+#confirmBtn { 
+    margin-top: 20px; 
+    cursor: pointer; 
+}
+
+#confirmBtn img { 
+    width: 300px; 
+}
+
+#confirmBtn:hover {
+    background-color: darkgoldenrod;
+}
+
+#output { 
+    margin-top: 15px; 
+    color: #ffcc00; 
+    font-weight: bold; 
+}
+    </style>
 </head>
 <body>
 
