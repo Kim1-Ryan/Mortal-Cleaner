@@ -11,25 +11,21 @@
         #title img { max-width: 90%; height: auto; }
         #startE { margin-top: 25%; cursor: pointer; }
         #startE img { max-width: 80%; height: auto; transition: transform 0.2s; }
-        #startE:hover img { transform: scale(1.1); }
-        footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.7); color: #ffcc00; padding: 10px 0; font-family: 'Courier New', monospace; text-align: center; font-size: 14px; z-index: 200; letter-spacing: 2px; border-top: 1px solid #444; }
-        @media (max-width: 600px) { #startE { margin-top: 40%; } footer { font-size: 12px; } }
+        footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.7); color: #ffcc00; padding: 10px 0; font-family: 'Courier New', monospace; text-align: center; font-size: 14px; z-index: 200; border-top: 1px solid #444; }
+        @media (max-width: 600px) { #startE { margin-top: 40%; } }
     </style>
 </head>
 <body>
-    <video autoplay muted loop playsinline id="bg-video">
-        <source src="./Fire_Embers_23___22s___4k_res (1).mp4" type="video/mp4">
-    </video>
+    <video autoplay muted loop playsinline id="bg-video"><source src="./Fire_Embers_23___22s___4k_res (1).mp4" type="video/mp4"></video>
     <div class="content">
         <div id="title"><img src="./mc title.png" alt="Mortal Cleaner"/></div>
-        <div id="startE">
-            <a id="startLink" href="./inputpg.html"><img src="./start e.png" alt="Press E to Start"/></a>
-        </div>
+        <div id="startE"><a id="startLink" href="./inputpg.html"><img src="./start e.png" alt="Start"/></a></div>
     </div>
     <footer>Kim Ryan</footer>
     <script>
-        document.addEventListener('keydown', (e) => { if (e.key.toLowerCase() === 'e') document.getElementById('startLink').click(); });
-        document.addEventListener('touchstart', () => { document.getElementById('startLink').click(); });
+        const start = () => document.getElementById('startLink').click();
+        document.addEventListener('keydown', (e) => { if (e.key.toLowerCase() === 'e') start(); });
+        document.addEventListener('touchstart', start);
     </script>
 </body>
 </html>
