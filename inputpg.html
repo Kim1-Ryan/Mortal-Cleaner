@@ -5,94 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose your Chores</title>
   <style>
-    /* 1. Page Setup - No Scroll */
+    /* 1. Page Lock - No Scroll on PC */
     html, body { 
-        height: 100%; 
-        margin: 0; 
+        height: 100%; margin: 0; 
         overflow: hidden; 
         background: black; 
     }
     
     body { 
-        display: flex;
-        flex-direction: column;
-        justify-content: center; 
-        align-items: center; 
+        display: flex; flex-direction: column; 
+        justify-content: center; align-items: center; 
     }
     
     #bg-video { 
-        position: fixed; 
-        top: 0; left: 0;
+        position: fixed; top: 0; left: 0;
         width: 100vw; height: 100vh;
-        z-index: -1; 
-        object-fit: cover; 
+        z-index: -1; object-fit: cover; 
     }
 
-    /* 2. Heading - Larger */
+    /* 2. Heading - Large and Visible */
     #title2 { width: 100%; text-align: center; }
     #title2 img { 
-        width: 75vw; /* Increased from 50vw */
-        max-width: 700px; /* Increased from 400px */
+        width: 70vw; max-width: 650px; 
     }
 
-    /* 3. THE GRID */
+    /* 3. THE GRID: PC Version */
     .grid-container { 
         display: grid; 
         grid-template-columns: repeat(9, 1fr); 
-        gap: 15px; 
-        padding: 20px; 
+        gap: 15px; padding: 20px; 
         background: rgba(0,0,0,0.85); 
         border: 4px solid #444; 
-        width: 95vw; 
-        max-width: 1300px; 
-        /* Added vertical margins to create the gaps you requested */
-        margin: 4vh 0; 
+        width: 90vw; max-width: 1400px; 
+        margin: 3vh 0; 
     }
 
     .chore-box { 
         aspect-ratio: 3 / 4; 
-        background-color: #333; 
-        border: 3px solid #666; 
+        background-color: #333; border: 3px solid #666; 
         cursor: pointer; 
-        /* Icons are now much larger inside the box */
-        background-size: 80%; 
-        background-position: center; 
-        background-repeat: no-repeat; 
-        transition: transform 0.1s;
+        /* PC Icon Size: Large and Clear */
+        background-size: 85%; 
+        background-position: center; background-repeat: no-repeat; 
+        filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.4));
+        transition: transform 0.1s, border-color 0.2s;
     }
 
     .chore-box.selected { 
-        border-color: #ffcc00; 
-        box-shadow: 0 0 15px #ffcc00; 
-        transform: scale(0.95);
+        border-color: #ffcc00; box-shadow: 0 0 20px #ffcc00; transform: scale(0.95);
     }
 
-    /* 4. Button & Footer */
+    /* 4. Action Button */
     #confirmBtn { background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; }
-    #confirmBtn img { width: 320px; max-width: 80vw; }
+    #confirmBtn img { width: 300px; max-width: 80vw; }
 
     footer { 
-        position: fixed;
-        bottom: 0;
-        width: 100%; 
-        background: rgba(0,0,0,0.8); 
-        color: #ffcc00; 
-        padding: 10px 0; 
-        font-family: 'Courier New', monospace; 
-        text-align: center;
-        border-top: 1px solid #444;
+        position: fixed; bottom: 0; width: 100%; 
+        background: rgba(0,0,0,0.8); color: #ffcc00; 
+        padding: 10px 0; font-family: 'Courier New', monospace; 
+        text-align: center; border-top: 1px solid #444;
     }
 
-    /* 5. Mobile Adjustments */
+    /* 5. MOBILE OVERRIDE: Shrinks everything back to phone-friendly sizes */
     @media (max-width: 800px) { 
-        html, body { overflow: auto; height: auto; } 
+        html, body { overflow: auto; height: auto; } /* Allow scroll on phone */
+        
+        #title2 img { width: 85vw; } /* Slightly smaller header for mobile */
+
         .grid-container { 
-            grid-template-columns: repeat(3, 1fr); 
-            width: 92vw;
-            margin: 20px 0;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            width: 96vw; /* Uses more width to avoid looking "narrow" */
+            gap: 8px; padding: 10px; margin: 15px 0;
         }
-        #title2 img { width: 90vw; }
-        .chore-box { background-size: 75%; }
+
+        .chore-box { 
+            /* Smaller icon size specifically for mobile */
+            background-size: 65%; 
+            border-width: 2px;
+        }
+
+        #confirmBtn img { width: 220px; }
+        footer { position: relative; } /* Pushes footer below content */
     }
 </style>
 </head>
