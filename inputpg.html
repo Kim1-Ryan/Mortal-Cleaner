@@ -5,20 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose your Chores</title>
   <style>
-    /* 1. Reset & Center Content in the Viewport */
+    /* 1. Prevent Scrolling & Center Everything */
     html, body { 
         height: 100%; 
         margin: 0; 
-        overflow: hidden; /* Stops all scrolling */
+        overflow: hidden; /* Locks the screen to prevent scrolling */
     }
     
     body { 
         background: black; 
         display: flex;
         flex-direction: column;
-        justify-content: center; /* Vertically centers the whole UI */
+        justify-content: space-around; /* Even spacing from top to bottom */
         align-items: center; 
-        font-family: sans-serif;
+        box-sizing: border-box;
+        padding: 10px;
     }
     
     #bg-video { 
@@ -29,26 +30,20 @@
         object-fit: cover; 
     }
 
-    /* 2. Scalable Title */
-    #title2 { margin-top: 10px; }
-    #title2 img { 
-        width: 40vw; /* Scales with screen width */
-        max-width: 450px; 
-    }
+    #title2 { width: 100%; text-align: center; }
+    #title2 img { width: 50vw; max-width: 400px; }
 
-    /* 3. THE GRID: PC Version (Fills space, No Scroll) */
+    /* 2. THE GRID: Large on PC, forced columns on Mobile */
     .grid-container { 
         display: grid; 
-        /* 9 columns on PC, sized to fit comfortably */
+        /* PC default: 9 large columns */
         grid-template-columns: repeat(9, 1fr); 
-        gap: 1.5vh; 
-        padding: 2vh; 
+        gap: 15px; 
+        padding: 20px; 
         background: rgba(0,0,0,0.85); 
         border: 4px solid #444; 
-        margin: 2vh auto; 
-        width: 90vw; 
-        max-width: 1200px;
-        box-sizing: border-box;
+        width: 95vw; 
+        max-width: 1200px; /* Limits size on ultra-wide monitors */
     }
 
     .chore-box { 
@@ -59,29 +54,21 @@
         background-size: 55%; 
         background-position: center; 
         background-repeat: no-repeat; 
+        transition: transform 0.1s;
     }
 
     .chore-box.selected { 
         border-color: #ffcc00; 
-        box-shadow: 0 0 20px #ffcc00; 
+        box-shadow: 0 0 15px #ffcc00; 
+        transform: scale(0.95);
     }
 
-    /* 4. Action Button */
-    #confirmBtn { 
-        background: transparent; 
-        border: 2px solid red; 
-        padding: 5px; 
-        cursor: pointer; 
-    }
-    #confirmBtn img { 
-        width: 25vw; 
-        max-width: 250px; 
-    }
+    /* 3. Button & Footer */
+    #confirmBtn { background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; }
+    #confirmBtn img { width: 250px; max-width: 70vw; }
 
-    /* 5. Footer (Stays at the very bottom) */
     footer { 
-        position: fixed; 
-        bottom: 0; width: 100%; 
+        width: 100%; 
         background: rgba(0,0,0,0.8); 
         color: #ffcc00; 
         padding: 10px 0; 
@@ -90,17 +77,23 @@
         border-top: 1px solid #444;
     }
 
-    /* 6. MOBILE FIX: Re-stack columns for small screens */
-    @media (max-width: 800px) { 
+    /* 4. RESPONSIVE: Tablet and Mobile adjustments */
+    
+    /* Small Laptops/Tablets */
+    @media (max-width: 1024px) {
+        .grid-container { grid-template-columns: repeat(6, 1fr); }
+    }
+
+    /* Mobile Phones */
+    @media (max-width: 600px) { 
+        html, body { overflow: auto; height: auto; } /* Allow scroll on small phones if needed */
         .grid-container { 
-            grid-template-columns: repeat(3, 1fr); /* 3 columns on phone */
-            width: 95vw;
-            gap: 10px;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns so boxes are big enough to see */
+            gap: 8px; 
+            padding: 10px; 
         }
-        #title2 img { width: 80vw; }
-        #confirmBtn img { width: 60vw; }
-        /* Allow scroll ONLY on mobile if the grid is tall */
-        html, body { overflow: auto; height: auto; min-height: 100vh; }
+        #title2 img { width: 85vw; }
+        .chore-box { border-width: 2px; }
     }
 </style>
 </head>
