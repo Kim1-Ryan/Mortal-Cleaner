@@ -5,67 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose your Chores</title>
     <style>
-        html, body { 
-            height: 100%; margin: 0; 
-            overflow: hidden; background: black; 
-        }
-        body { 
-            display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; 
-            background: transparent; /* Ensures video shows through */
-        }
+        /* 1. Page Setup - No Scroll on PC */
+        html, body { height: 100%; margin: 0; overflow: hidden; background: black; }
+        body { display: flex; flex-direction: column; justify-content: center; align-items: center; background: transparent; }
         
+        /* 2. Video Background - Fixed Positioning */
         #bg-video { 
             position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
             z-index: -1; object-fit: cover; 
-            background: black;
+            /* Fixes potential "black bar" or flickering on some PC GPUs */
+            transform: translateZ(0); 
+            backface-visibility: hidden;
         }
 
+        /* 3. Heading - Scaled for PC & Mobile */
         #title2 { width: 100%; text-align: center; z-index: 1; }
         #title2 img { width: 75vw; max-width: 600px; }
 
+        /* 4. THE GRID: PC Version (9 columns) */
         .grid-container { 
             display: grid; 
             grid-template-columns: repeat(9, 105px); 
             gap: 12px; padding: 15px; 
-            background: rgba(0,0,0,0.85); 
-            border: 4px solid #444; 
-            margin: 3.5vh auto; 
-            justify-content: center;
-            z-index: 1;
+            background: rgba(0,0,0,0.85); border: 4px solid #444; 
+            margin: 3.5vh auto; justify-content: center; z-index: 1;
         }
 
         .chore-box { 
-            aspect-ratio: 3 / 4; 
-            background-color: #333; border: 3px solid #666; 
-            cursor: pointer; 
-            background-size: 90%; 
+            aspect-ratio: 3 / 4; background-color: #333; border: 3px solid #666; 
+            cursor: pointer; background-size: 90%; 
             background-position: center; background-repeat: no-repeat; 
             transition: transform 0.1s;
         }
 
-        .chore-box.selected { 
-            border-color: #ffcc00; box-shadow: 0 0 15px #ffcc00; transform: scale(0.95);
-        }
+        .chore-box.selected { border-color: #ffcc00; box-shadow: 0 0 15px #ffcc00; transform: scale(0.95); }
 
-        #confirmBtn { background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; margin-bottom: 15px; z-index: 1;}
+        /* 5. Buttons & Footer */
+        #confirmBtn { background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; margin-bottom: 15px; z-index: 1; }
         #confirmBtn img { width: 280px; max-width: 80vw; }
 
         footer { 
-            position: fixed; bottom: 0; width: 100%; 
-            background: rgba(0,0,0,0.8); color: #ffcc00; 
-            padding: 10px 0; font-family: 'Courier New', monospace; 
+            position: fixed; bottom: 0; width: 100%; background: rgba(0,0,0,0.8); 
+            color: #ffcc00; padding: 10px 0; font-family: 'Courier New', monospace; 
             text-align: center; border-top: 1px solid #444; z-index: 1;
         }
 
+        /* 6. MOBILE FIX */
         @media (max-width: 800px) { 
             html, body { overflow: auto; height: auto; } 
-            .grid-container { 
-                grid-template-columns: repeat(3, 85px); 
-                width: fit-content; 
-                gap: 8px; padding: 10px; margin: 15px auto;
-            }
+            .grid-container { grid-template-columns: repeat(3, 85px); width: fit-content; gap: 8px; padding: 10px; margin: 15px auto; }
             .chore-box { background-size: 85%; border-width: 2px; }
             #title2 img { width: 85vw; }
             #confirmBtn img { width: 200px; }
@@ -74,8 +63,8 @@
     </style>
 </head>
 <body>
-    <video autoplay muted loop playsinline id="bg-video">
-        <!-- Encoded filename to handle spaces and brackets safely -->
+    <!-- Preload attribute helps PC browsers prepare the file -->
+    <video autoplay muted loop playsinline preload="auto" id="bg-video">
         <source src="./Fire_Embers_23___22s___4k_res%20(1).mp4" type="video/mp4">
     </video>
 
@@ -94,8 +83,8 @@
         <div class="chore-box" data-id="bedroom" data-name="bedroom" style="background-image: url('./icons8-bed-85.png');"></div>
         <div class="chore-box" data-id="trash" data-name="trash" style="background-image: url('./icons8-trash-64.png');"></div>
         <div class="chore-box" data-id="cook" data-name="cook" style="background-image: url('./icons8-cooking-64.png');"></div>
-        <div class="chore-box" data-id="pets" data-name="pet-care" style="background-image: url('./icons8-pet-food-64.png');"></div>
-        <div class="chore-box" data-id="pot-plants" data-name="pot-plants" style="background-image: url('./icons8-watering-plants-64.png');"></div>
+        <div class="chore-box" data-id="pets" data-name="pet care" style="background-image: url('./icons8-pet-food-64.png');"></div>
+        <div class="chore-box" data-id="pot-plants" data-name="pot plants" style="background-image: url('./icons8-watering-plants-64.png');"></div>
         <div class="chore-box" data-id="garden" data-name="garden" style="background-image: url('./icons8-rake-64.png');"></div>
         <div class="chore-box" data-id="devices" data-name="device care" style="background-image: url('./icons8-clean-64.png');"></div>
         <div class="chore-box" data-id="groceries" data-name="groceries" style="background-image: url('./icons8-grocery-64.png');"></div>
@@ -106,9 +95,9 @@
     <footer>Kim Ryan</footer>
 
     <script>
-        // Grid logic
         const grid = document.getElementById('choreGrid');
         let selectedChores = [];
+
         grid.addEventListener('click', (e) => {
             const box = e.target.closest('.chore-box');
             if (!box) return;
@@ -117,25 +106,35 @@
             if (box.classList.toggle('selected')) {
                 const mins = parseFloat(prompt(`Minutes for ${name}:`, "5")) || 5;
                 selectedChores.push({ id, task: name, time: mins });
-            } else { selectedChores = selectedChores.filter(i => i.id !== id); }
+            } else { 
+                selectedChores = selectedChores.filter(i => i.id !== id); 
+            }
         });
 
         document.getElementById('confirmBtn').onclick = () => {
             if (selectedChores.length === 0) alert("NO CHORES SELECTED!");
-            else { localStorage.setItem('choreData', JSON.stringify(selectedChores)); window.location.href = 'play.html'; }
+            else { 
+                localStorage.setItem('choreData', JSON.stringify(selectedChores)); 
+                window.location.href = 'play.html'; 
+            }
         };
 
-        // FORCE VIDEO PLAY (Crucial for Chrome/Safari)
-        window.addEventListener('load', function() {
-            var video = document.getElementById('bg-video');
-            video.play().catch(function(error) {
-                console.log("Autoplay blocked. Waiting for user interaction.");
-                // Play on first click if autoplay was blocked
-                document.addEventListener('click', function() {
-                    video.play();
-                }, { once: true });
+        // ENHANCED PC AUTOPLAY SCRIPT
+        const video = document.getElementById('bg-video');
+        
+        function attemptPlay() {
+            video.play().catch(() => {
+                // PC Browsers often block autoplay until the user interacts with the page once.
+                console.log("PC Autoplay blocked - awaiting user interaction.");
+                window.addEventListener('mousedown', () => video.play(), { once: true });
+                window.addEventListener('keydown', () => video.play(), { once: true });
             });
-        });
+        }
+
+        // Try to play as soon as metadata is loaded
+        video.onloadedmetadata = attemptPlay;
+        // Backup: attempt play after 1 second
+        setTimeout(attemptPlay, 1000);
     </script>
 </body>
 </html>
