@@ -11,28 +11,31 @@
         display: flex; flex-direction: column; 
         justify-content: center; align-items: center; 
         background: transparent; 
+        padding: 40px; /* Forces a gap between content and screen edges */
+        box-sizing: border-box;
     }
     #bg-video { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; object-fit: cover; }
 
-    /* 2. PC & MEDIUM SCREENS (Unified scaling to prevent scroll) */
-    #title2 { width: 100%; text-align: center; z-index: 1; }
+    /* 2. PC & MEDIUM SCREENS (Contained & Centered) */
+    #title2 { width: 100%; text-align: center; z-index: 1; margin-bottom: 10px; }
     #title2 img { 
         width: auto;
-        height: 12vh; /* Heading height scales with screen height */
-        max-height: 150px; 
+        height: 10vh; 
+        max-height: 120px; 
     }
 
     .grid-container { 
         display: grid; 
-        /* 9 columns on PC, shrinks based on height to prevent scrolling */
-        grid-template-columns: repeat(9, minmax(70px, 12.5vh)); 
-        gap: 1.5vh; 
-        padding: 2vh; 
+        /* Slightly smaller boxes than before for a "contained" feel */
+        grid-template-columns: repeat(9, minmax(60px, 11vh)); 
+        gap: 15px; 
+        padding: 25px; 
         background: rgba(0,0,0,0.85); 
         border: 4px solid #444; 
-        margin: 2vh auto; 
+        margin: 0 auto; 
         width: fit-content;
-        max-width: 92vw;
+        /* Limits width so it doesn't hit the screen sides */
+        max-width: 85vw; 
         justify-content: center; 
         z-index: 1;
     }
@@ -42,7 +45,7 @@
         background-color: #333; 
         border: 3px solid #666; 
         cursor: pointer; 
-        background-size: 94%; /* Icons fill boxes significantly */
+        background-size: 92%; 
         background-position: center; 
         background-repeat: no-repeat; 
         transition: transform 0.1s;
@@ -50,40 +53,40 @@
 
     .chore-box.selected { border-color: #ffcc00; box-shadow: 0 0 15px #ffcc00; transform: scale(0.95); }
 
-    #confirmBtn { background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; z-index: 1; }
+    #confirmBtn { background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; z-index: 1; margin-top: 15px; }
     #confirmBtn img { 
         width: auto;
-        height: 8vh; /* Button height scales with screen height */
-        max-height: 100px;
+        height: 7vh; 
+        max-height: 80px;
     }
 
     footer { 
         position: fixed; bottom: 0; width: 100%; 
         background: rgba(0,0,0,0.8); color: #ffcc00; 
-        padding: 1vh 0; font-family: 'Courier New', monospace; 
+        padding: 10px 0; font-family: 'Courier New', monospace; 
         text-align: center; border-top: 1px solid #444; z-index: 1;
-        font-size: 1.5vh;
     }
 
-    /* 3. MEDIUM SCREENS ADJUSTMENT (Drop to 6 columns if width is too narrow for 9) */
+    /* 3. MEDIUM SCREENS (6-column drop) */
     @media (max-width: 1100px) and (min-width: 801px) {
         .grid-container { 
-            grid-template-columns: repeat(6, minmax(80px, 13vh)); 
+            grid-template-columns: repeat(6, minmax(80px, 12vh)); 
         }
     }
 
-    /* 4. MOBILE VERSION (UNTOUCHED - PERFECT VERSION) */
+    /* 4. MOBILE VERSION (STILL UNTOUCHED) */
     @media (max-width: 800px) { 
-        html, body { overflow: auto; height: auto; } 
+        html, body { overflow: auto; height: auto; padding: 0; } 
         #title2 img { width: 85vw; height: auto; max-height: none; }
         .grid-container { 
             grid-template-columns: repeat(3, 85px); 
             width: fit-content; 
             gap: 8px; padding: 10px; margin: 15px auto; 
+            max-width: none;
         }
         .chore-box { background-size: 85%; border-width: 2px; }
         #confirmBtn img { width: 200px; height: auto; max-height: none; }
-        footer { position: relative; font-size: 14px; padding: 10px 0; }
+        footer { position: relative; padding: 10px 0; }
     }
 </style>
 </head>
