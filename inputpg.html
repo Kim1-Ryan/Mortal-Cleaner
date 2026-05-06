@@ -16,24 +16,25 @@
     }
     #bg-video { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; object-fit: cover; }
 
-    /* 2. PC & MEDIUM SCREENS (Heading up, Button down) */
-    #title2 { width: 100%; text-align: center; z-index: 1; margin-bottom: 5px; }
+    /* 2. PC & MEDIUM SCREENS (Contained, Centered, and Proportional) */
+    #title2 { width: 100%; text-align: center; z-index: 1; margin-bottom: 20px; }
     #title2 img { 
-        width: auto;
-        height: 15vh; /* LARGER HEADING */
-        max-height: 180px; 
+        width: 40vw; /* Responsive width */
+        max-width: 500px; /* Limits size on large monitors */
+        height: auto;
     }
 
     .grid-container { 
         display: grid; 
-        grid-template-columns: repeat(9, minmax(60px, 11vh)); 
+        /* 9 columns on PC, fixed size to prevent over-stretching */
+        grid-template-columns: repeat(9, 100px); 
         gap: 15px; 
         padding: 25px; 
         background: rgba(0,0,0,0.85); 
         border: 4px solid #444; 
         margin: 0 auto; 
         width: fit-content;
-        max-width: 85vw; 
+        max-width: 90vw; 
         justify-content: center; 
         z-index: 1;
     }
@@ -51,11 +52,11 @@
 
     .chore-box.selected { border-color: #ffcc00; box-shadow: 0 0 15px #ffcc00; transform: scale(0.95); }
 
-    #confirmBtn { background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; z-index: 1; margin-top: 15px; }
+    /* Small Tactical Confirm Button */
+    #confirmBtn { background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; z-index: 1; margin-top: 25px; }
     #confirmBtn img { 
-        width: auto;
-        height: 5vh; /* SMALLER BUTTON */
-        max-height: 60px;
+        width: 180px; /* Small fixed size for PC */
+        height: auto;
     }
 
     footer { 
@@ -65,18 +66,19 @@
         text-align: center; border-top: 1px solid #444; z-index: 1;
     }
 
-    /* 3. MEDIUM SCREENS (6-column drop) */
+    /* 3. MEDIUM SCREENS (Tablets / Laptops) */
     @media (max-width: 1100px) and (min-width: 801px) {
         .grid-container { 
-            grid-template-columns: repeat(6, minmax(80px, 12vh)); 
+            grid-template-columns: repeat(6, 90px); /* 6 columns to save vertical space */
         }
-        #title2 img { height: 12vh; } /* Slightly smaller heading for tablets */
+        #title2 img { width: 50vw; max-width: 400px; }
+        #confirmBtn img { width: 150px; }
     }
 
     /* 4. MOBILE VERSION (REMAINS UNTOUCHED) */
     @media (max-width: 800px) { 
         html, body { overflow: auto; height: auto; padding: 0; } 
-        #title2 img { width: 85vw; height: auto; max-height: none; }
+        #title2 img { width: 85vw; height: auto; max-width: none; }
         .grid-container { 
             grid-template-columns: repeat(3, 85px); 
             width: fit-content; 
