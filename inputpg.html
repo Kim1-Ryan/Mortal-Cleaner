@@ -11,22 +11,21 @@
         display: flex; flex-direction: column; 
         justify-content: center; align-items: center; 
         background: transparent; 
-        padding: 40px; /* Forces a gap between content and screen edges */
+        padding: 20px; 
         box-sizing: border-box;
     }
     #bg-video { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; object-fit: cover; }
 
-    /* 2. PC & MEDIUM SCREENS (Contained & Centered) */
-    #title2 { width: 100%; text-align: center; z-index: 1; margin-bottom: 10px; }
+    /* 2. PC & MEDIUM SCREENS (Heading up, Button down) */
+    #title2 { width: 100%; text-align: center; z-index: 1; margin-bottom: 5px; }
     #title2 img { 
         width: auto;
-        height: 10vh; 
-        max-height: 120px; 
+        height: 15vh; /* LARGER HEADING */
+        max-height: 180px; 
     }
 
     .grid-container { 
         display: grid; 
-        /* Slightly smaller boxes than before for a "contained" feel */
         grid-template-columns: repeat(9, minmax(60px, 11vh)); 
         gap: 15px; 
         padding: 25px; 
@@ -34,7 +33,6 @@
         border: 4px solid #444; 
         margin: 0 auto; 
         width: fit-content;
-        /* Limits width so it doesn't hit the screen sides */
         max-width: 85vw; 
         justify-content: center; 
         z-index: 1;
@@ -56,8 +54,8 @@
     #confirmBtn { background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; z-index: 1; margin-top: 15px; }
     #confirmBtn img { 
         width: auto;
-        height: 7vh; 
-        max-height: 80px;
+        height: 5vh; /* SMALLER BUTTON */
+        max-height: 60px;
     }
 
     footer { 
@@ -72,9 +70,10 @@
         .grid-container { 
             grid-template-columns: repeat(6, minmax(80px, 12vh)); 
         }
+        #title2 img { height: 12vh; } /* Slightly smaller heading for tablets */
     }
 
-    /* 4. MOBILE VERSION (STILL UNTOUCHED) */
+    /* 4. MOBILE VERSION (REMAINS UNTOUCHED) */
     @media (max-width: 800px) { 
         html, body { overflow: auto; height: auto; padding: 0; } 
         #title2 img { width: 85vw; height: auto; max-height: none; }
