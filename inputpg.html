@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose your Chores</title>
-  <style>
-        /* 1. Page Setup & Centering */
+    <style>
         html, body { 
             height: 100%; margin: 0; 
             overflow: hidden; background: black; 
@@ -13,20 +12,19 @@
         body { 
             display: flex; flex-direction: column; 
             justify-content: center; align-items: center; 
+            background: transparent; /* Ensures video shows through */
         }
         
-        /* 2. Video Background Fix */
         #bg-video { 
             position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
             z-index: -1; object-fit: cover; 
+            background: black;
         }
 
-        /* 3. Heading - Scaled */
-        #title2 { width: 100%; text-align: center; }
+        #title2 { width: 100%; text-align: center; z-index: 1; }
         #title2 img { width: 75vw; max-width: 600px; }
 
-        /* 4. THE GRID: PC Version */
         .grid-container { 
             display: grid; 
             grid-template-columns: repeat(9, 105px); 
@@ -35,13 +33,13 @@
             border: 4px solid #444; 
             margin: 3.5vh auto; 
             justify-content: center;
+            z-index: 1;
         }
 
         .chore-box { 
             aspect-ratio: 3 / 4; 
             background-color: #333; border: 3px solid #666; 
             cursor: pointer; 
-            /* Fill icon to 90% to remove excess padding */
             background-size: 90%; 
             background-position: center; background-repeat: no-repeat; 
             transition: transform 0.1s;
@@ -51,32 +49,24 @@
             border-color: #ffcc00; box-shadow: 0 0 15px #ffcc00; transform: scale(0.95);
         }
 
-        /* 5. Button & Footer */
-        #confirmBtn { background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; margin-bottom: 15px;}
+        #confirmBtn { background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; margin-bottom: 15px; z-index: 1;}
         #confirmBtn img { width: 280px; max-width: 80vw; }
 
         footer { 
             position: fixed; bottom: 0; width: 100%; 
             background: rgba(0,0,0,0.8); color: #ffcc00; 
             padding: 10px 0; font-family: 'Courier New', monospace; 
-            text-align: center; border-top: 1px solid #444;
+            text-align: center; border-top: 1px solid #444; z-index: 1;
         }
 
-        /* 6. MOBILE FIX: Scaled down grid & icons */
         @media (max-width: 800px) { 
             html, body { overflow: auto; height: auto; } 
-            
             .grid-container { 
                 grid-template-columns: repeat(3, 85px); 
                 width: fit-content; 
                 gap: 8px; padding: 10px; margin: 15px auto;
             }
-
-            .chore-box { 
-                background-size: 85%; /* Slightly smaller for mobile blocks */
-                border-width: 2px;
-            }
-
+            .chore-box { background-size: 85%; border-width: 2px; }
             #title2 img { width: 85vw; }
             #confirmBtn img { width: 200px; }
             footer { position: relative; }
@@ -85,11 +75,13 @@
 </head>
 <body>
     <video autoplay muted loop playsinline id="bg-video">
-        <source src="./Fire_Embers_23___22s___4k_res (1).mp4" type="video/mp4">
+        <!-- Encoded filename to handle spaces and brackets safely -->
+        <source src="./Fire_Embers_23___22s___4k_res%20(1).mp4" type="video/mp4">
     </video>
+
     <div id="title2"><img src="./mc title.png"/></div>
+
     <div class="grid-container" id="choreGrid">
-        <!-- Boxes generated exactly as your original snippet -->
         <div class="chore-box" data-id="dusting" data-name="dusting" style="background-image: url('./icons8-dusting-64.png');"></div>
         <div class="chore-box" data-id="sweep" data-name="sweep" style="background-image: url('./icons8-broom-64.png');"></div>
         <div class="chore-box" data-id="mop" data-name="mop" style="background-image: url('./icons8-mop-64.png');"></div>
@@ -109,9 +101,12 @@
         <div class="chore-box" data-id="groceries" data-name="groceries" style="background-image: url('./icons8-grocery-64.png');"></div>
         <div class="chore-box" data-id="garage" data-name="garage" style="background-image: url('./icons8-garage-64.png');"></div>
     </div>
+
     <button id="confirmBtn"><img src="./confirm selection.png"/></button>
     <footer>Kim Ryan</footer>
+
     <script>
+        // Grid logic
         const grid = document.getElementById('choreGrid');
         let selectedChores = [];
         grid.addEventListener('click', (e) => {
@@ -124,10 +119,23 @@
                 selectedChores.push({ id, task: name, time: mins });
             } else { selectedChores = selectedChores.filter(i => i.id !== id); }
         });
+
         document.getElementById('confirmBtn').onclick = () => {
             if (selectedChores.length === 0) alert("NO CHORES SELECTED!");
             else { localStorage.setItem('choreData', JSON.stringify(selectedChores)); window.location.href = 'play.html'; }
         };
+
+        // FORCE VIDEO PLAY (Crucial for Chrome/Safari)
+        window.addEventListener('load', function() {
+            var video = document.getElementById('bg-video');
+            video.play().catch(function(error) {
+                console.log("Autoplay blocked. Waiting for user interaction.");
+                // Play on first click if autoplay was blocked
+                document.addEventListener('click', function() {
+                    video.play();
+                }, { once: true });
+            });
+        });
     </script>
 </body>
 </html>
