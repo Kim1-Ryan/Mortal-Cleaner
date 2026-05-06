@@ -5,23 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose your Chores</title>
     <style>
-        body { margin: 0; background: black; text-align: center; min-height: 100vh; padding-bottom: 70px; }
-        #bg-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; z-index: -1; object-fit: cover; }
-        #title2 { margin-top: 5%; }
-        #title2 img { width: 60%; }
-        .grid-container { display: grid; grid-template-columns: repeat(9, 120px); gap: 15px; padding: 20px; background: rgba(0,0,0,0.8); border: 4px solid #444; justify-content: center; margin: 20px auto; max-width: fit-content; }
-        .chore-box { width: 120px; height: 160px; background-color: #333; border: 3px solid #666; cursor: pointer; background-size: contain; background-position: center; background-repeat: no-repeat; }
-        .chore-box.selected { border-color: #ffcc00; box-shadow: 0 0 20px #ffcc00; }
-        #confirmBtn { margin-top: 20px; background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; }
-        #confirmBtn img { width: 300px; }
-        footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.7); color: #ffcc00; padding: 10px 0; font-family: 'Courier New', monospace; text-align: center; z-index: 200; border-top: 1px solid #444; }
-        @media (max-width: 800px) { 
-            .grid-container { grid-template-columns: repeat(3, 1fr); width: 90%; gap: 10px; }
-            .chore-box { width: 100%; height: 120px; }
-            #confirmBtn img { width: 200px; }
-            #title2 img { width: 85%; }
+    body { margin: 0; background: black; text-align: center; min-height: 100vh; padding-bottom: 70px; overflow-x: hidden; }
+    #bg-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; z-index: -1; object-fit: cover; }
+    
+    #title2 { margin-top: 5%; padding: 0 10px; }
+    #title2 img { width: 60%; max-width: 600px; }
+
+    .grid-container { 
+        display: grid; 
+        /* Use auto-fit so it fills the space naturally */
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
+        gap: 15px; 
+        padding: 20px; 
+        background: rgba(0,0,0,0.8); 
+        border: 4px solid #444; 
+        margin: 20px auto; 
+        width: 90%; /* Fixed width to prevent "squeezing" */
+        max-width: 1100px; 
+    }
+
+    .chore-box { 
+        aspect-ratio: 3 / 4; /* Keeps the rectangular shape consistent */
+        background-color: #333; 
+        border: 3px solid #666; 
+        cursor: pointer; 
+        background-size: 60%; /* Adjusted so icons don't touch edges */
+        background-position: center; 
+        background-repeat: no-repeat; 
+        transition: transform 0.1s;
+    }
+
+    .chore-box.selected { border-color: #ffcc00; box-shadow: 0 0 20px #ffcc00; transform: scale(0.95); }
+
+    #confirmBtn { margin: 20px 0; background: transparent; border: 2px solid red; padding: 5px; cursor: pointer; }
+    #confirmBtn img { width: 300px; max-width: 80%; }
+
+    footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.7); color: #ffcc00; padding: 10px 0; font-family: 'Courier New', monospace; text-align: center; z-index: 200; border-top: 1px solid #444; }
+
+    /* Mobile specific tweaks */
+    @media (max-width: 600px) { 
+        .grid-container { 
+            grid-template-columns: repeat(3, 1fr); /* Force 3 columns on small phones */
+            gap: 8px; 
+            padding: 10px; 
         }
-    </style>
+        #title2 img { width: 95%; }
+    }
+</style>
 </head>
 <body>
     <video autoplay muted loop playsinline id="bg-video"><source src="./Fire_Embers_23___22s___4k_res (1).mp4" type="video/mp4"></video>
