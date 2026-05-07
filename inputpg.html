@@ -16,7 +16,7 @@
     }
     #bg-video { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; object-fit: cover; }
 
-    /* 2. PC & MEDIUM SCREENS (Enhanced Grid and Balanced Button) */
+    /* 2. PC & MEDIUM SCREENS */
     #title2 { width: 100%; text-align: center; z-index: 1; margin-bottom: 10px; }
     #title2 img { 
         width: 75vw; 
@@ -26,7 +26,6 @@
 
     .grid-container { 
         display: grid; 
-        /* PC: Larger columns to fill the monitor width better */
         grid-template-columns: repeat(9, 125px); 
         gap: 15px; 
         padding: 25px; 
@@ -52,10 +51,10 @@
 
     .chore-box.selected { border-color: #ffcc00; box-shadow: 0 0 15px #ffcc00; transform: scale(0.95); }
 
-    /* Balanced Small Button */
+    /* Updated Button Size for PC */
     #confirmBtn { background: transparent; border: 2px solid red; padding: 6px; cursor: pointer; z-index: 1; margin-top: 15px; }
     #confirmBtn img { 
-        width: 180px; /* Slightly larger but still tactical */
+        width: 240px; /* Increased from 180px */
         height: auto;
     }
 
@@ -69,11 +68,10 @@
     /* 3. MEDIUM SCREENS (Tablets / Laptops) */
     @media (max-width: 1200px) and (min-width: 801px) {
         .grid-container { 
-            /* PC: 6 columns for tablet prevents icons from being too tiny */
             grid-template-columns: repeat(6, 110px); 
         }
-        #title2 img { width: 70vw; max-width: 650px; }
-        #confirmBtn img { width: 150px; }
+        #title2 img { width: 70vw; max-height: 150px; }
+        #confirmBtn img { width: 180px; }
     }
 
     /* 4. MOBILE VERSION (UNTOUCHED - REMAINS PERFECT) */
