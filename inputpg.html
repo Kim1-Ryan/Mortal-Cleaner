@@ -4,94 +4,167 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose your Chores</title>
+    
     <style>
-    /* 1. Reset and Center Content */
-    html, body { height: 100%; margin: 0; overflow: hidden; background: black; }
-    body { 
-        display: flex; flex-direction: column; 
-        justify-content: center; align-items: center; 
-        background: transparent; 
-        padding: 20px; 
-        box-sizing: border-box;
-    }
-    #bg-video { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; object-fit: cover; }
+    
+        html, body {
+            height: 100%; 
+            margin: 0;
+            overflow: hidden;
+            background: black; 
+        }
+        
+        body { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            background: transparent; 
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        
+        #bg-video {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            z-index: -1; 
+            object-fit: cover; 
+        }
 
-    /* 2. PC & MEDIUM SCREENS */
-    #title2 { width: 100%; text-align: center; z-index: 1; margin-bottom: 10px; }
-    #title2 img { 
-        width: 75vw; 
-        max-width: 950px; 
-        height: auto;
-    }
+    /* PC & MEDIUM SCREENS */
+        #title2 {
+            width: 100%; 
+            text-align: center; 
+            z-index: 1; 
+            margin-bottom: 10px; 
+        }
+        
+        #title2 img { 
+            width: 75vw; 
+            max-width: 950px; 
+            height: auto;
+        }
 
-    .grid-container { 
-        display: grid; 
-        grid-template-columns: repeat(9, 125px); 
-        gap: 15px; 
-        padding: 25px; 
-        background: rgba(0,0,0,0.85); 
-        border: 4px solid #444; 
-        margin: 10px auto; 
-        width: fit-content;
-        max-width: 95vw; 
-        justify-content: center; 
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(9, 125px); 
+            gap: 15px; 
+            padding: 25px; 
+            background: rgba(0,0,0,0.85); 
+            border: 4px solid #444; 
+            margin: 10px auto; 
+            width: fit-content;
+            max-width: 95vw; 
+            justify-content: center; 
+            z-index: 1;
+        }
+    
+        .chore-box { 
+            aspect-ratio: 3 / 4; 
+            background-color: #333; 
+            border: 3px solid #666; 
+            cursor: pointer; 
+            background-size: 94%; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            transition: transform 0.1s;
+        }
+
+        .chore-box.selected {
+            border-color: #ffcc00; 
+            box-shadow: 0 0 15px #ffcc00; 
+            transform: scale(0.95);
+        }
+
+    /* Button Size for PC */
+        #confirmBtn { 
+            background: transparent; 
+            border: 2px solid red; 
+            padding: 6px; 
+            cursor: pointer; 
+            z-index: 1; 
+            margin-top: 15px; 
+        }
+        
+        #confirmBtn img { 
+            width: 240px; 
+            height: auto;
+        }
+
+    footer { 
+        position: fixed; 
+        bottom: 0; 
+        width: 100%; 
+        background: rgba(0,0,0,0.8); 
+        color: #ffcc00; 
+        padding: 8px 0; 
+        font-family: 'Courier New', monospace; 
+        text-align: center; 
+        border-top: 1px solid #444; 
         z-index: 1;
     }
 
-    .chore-box { 
-        aspect-ratio: 3 / 4; 
-        background-color: #333; 
-        border: 3px solid #666; 
-        cursor: pointer; 
-        background-size: 94%; 
-        background-position: center; 
-        background-repeat: no-repeat; 
-        transition: transform 0.1s;
-    }
-
-    .chore-box.selected { border-color: #ffcc00; box-shadow: 0 0 15px #ffcc00; transform: scale(0.95); }
-
-    /* Updated Button Size for PC */
-    #confirmBtn { background: transparent; border: 2px solid red; padding: 6px; cursor: pointer; z-index: 1; margin-top: 15px; }
-    #confirmBtn img { 
-        width: 240px; /* Increased from 180px */
-        height: auto;
-    }
-
-    footer { 
-        position: fixed; bottom: 0; width: 100%; 
-        background: rgba(0,0,0,0.8); color: #ffcc00; 
-        padding: 8px 0; font-family: 'Courier New', monospace; 
-        text-align: center; border-top: 1px solid #444; z-index: 1;
-    }
-
-    /* 3. MEDIUM SCREENS (Tablets / Laptops) */
+    /* MEDIUM SCREENS (Tablets / Laptops) */
     @media (max-width: 1200px) and (min-width: 801px) {
         .grid-container { 
             grid-template-columns: repeat(6, 110px); 
         }
-        #title2 img { width: 70vw; max-height: 150px; }
-        #confirmBtn img { width: 180px; }
+        
+        #title2 img { 
+            width: 70vw; 
+            max-height: 150px; 
+        }
     }
 
-    /* 4. MOBILE VERSION (UNTOUCHED - REMAINS PERFECT) */
+    /* MOBILE VERSION */
     @media (max-width: 800px) { 
-        html, body { overflow: auto; height: auto; padding: 0; } 
-        #title2 img { width: 85vw; height: auto; max-height: none; }
+        html, body { 
+            overflow: auto; 
+            height: auto; 
+            padding: 0; 
+        } 
+        
+        #title2 img { 
+            width: 85vw; 
+            height: auto; 
+            max-height: none; 
+        }
+        
         .grid-container { 
             grid-template-columns: repeat(3, 85px); 
             width: fit-content; 
-            gap: 8px; padding: 10px; margin: 15px auto; 
+            gap: 8px; 
+            padding: 10px; 
+            margin: 15px auto; 
             max-width: none;
         }
-        .chore-box { background-size: 85%; border-width: 2px; }
-        #confirmBtn img { width: 200px; height: auto; max-height: none; }
-        footer { position: relative; padding: 10px 0; }
+        
+        .chore-box { 
+            background-size: 85%; 
+            border-width: 2px; 
+        }
+        
+        #confirmBtn img { 
+            width: 200px; 
+            height: auto; 
+            max-height: none; 
+        }
+        
+        footer { 
+            position: relative; 
+            padding: 10px 0; 
+        }
     }
+        
 </style>
+
 </head>
 <body>
-    <!-- Preload attribute helps PC browsers prepare the file -->
+    
+    <!-- Preload attribute to help PC browsers prepare the file -->
     <video autoplay muted loop playsinline preload="auto" id="bg-video">
         <source src="./Fire_Embers_23___22s___4k_res%20(1).mp4" type="video/mp4">
     </video>
@@ -123,6 +196,7 @@
     <footer>Kim Ryan</footer>
 
     <script>
+        
         const grid = document.getElementById('choreGrid');
         let selectedChores = [];
 
@@ -147,12 +221,12 @@
             }
         };
 
-        // ENHANCED PC AUTOPLAY SCRIPT
+        // PC AUTOPLAY SCRIPT
         const video = document.getElementById('bg-video');
         
         function attemptPlay() {
             video.play().catch(() => {
-                // PC Browsers often block autoplay until the user interacts with the page once.
+                // to get around how PC Browsers often block autoplay until the user interacts with the page once:
                 console.log("PC Autoplay blocked - awaiting user interaction.");
                 window.addEventListener('mousedown', () => video.play(), { once: true });
                 window.addEventListener('keydown', () => video.play(), { once: true });
@@ -163,6 +237,8 @@
         video.onloadedmetadata = attemptPlay;
         // Backup: attempt play after 1 second
         setTimeout(attemptPlay, 1000);
+    
     </script>
+
 </body>
 </html>
